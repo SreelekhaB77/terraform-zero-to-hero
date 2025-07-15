@@ -93,13 +93,14 @@ resource "aws_instance" "server" {
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "echo 'Hello from the remote instance'",
-      "sudo apt update -y",  # Update package lists (for ubuntu)
-      "sudo apt-get install -y python3-pip",  # Example package installation
-      "cd /home/ubuntu",
-      "sudo pip3 install flask",
-      "sudo python3 app.py &",
-    ]
-  }
+  inline = [
+    "sudo apt update -y",
+    "sudo apt install -y python3-pip python3-flask",
+    "cd /home/ubuntu && python3 -m flask --version || echo 'Flask install failed!'",
+    "ls -l /home/ubuntu",  # Debug: confirm app.py is really there
+    "cd /home/ubuntu && nohup sudo python3 /home/ubuntu/app.py > /home/ubuntu/app.log 2>&1 &",
+    "sleep 3",
+    "ps -ef | grep python"
+  ]
+ }
 }
